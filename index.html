@@ -47,13 +47,9 @@
         button:hover {
             background: #003A70;
         }
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .slider {
-            flex-grow: 1;
+        .slider-container, .response-input {
+            display: none;
+            margin-top: 10px;
         }
         .result {
             font-size: 18px;
@@ -68,13 +64,18 @@
         <label for="sampleSize">Enter Sample Size:</label>
         <input type="number" id="sampleSize" placeholder="Enter number of people surveyed" min="1">
         
-        <label for="responseRate">Expected Response Rate: <span id="responseRateValue">50%</span></label>
-        <div class="slider-container">
+        <button onclick="showResponseRate()">Enter Expected Response Rate</button>
+        <button onclick="showTotalResponses()">Enter Total Number of Responses</button>
+        
+        <div id="responseRateSection" class="slider-container">
+            <label for="responseRate">Expected Response Rate: <span id="responseRateValue">50%</span></label>
             <input type="range" id="responseRate" class="slider" min="1" max="100" value="50" oninput="updateRate()">
         </div>
         
-        <label for="responses">Enter Number of Responses (Optional):</label>
-        <input type="number" id="responses" placeholder="Enter number of responses" min="0">
+        <div id="responseInputSection" class="response-input">
+            <label for="responses">Enter Number of Responses:</label>
+            <input type="number" id="responses" placeholder="Enter number of responses" min="0">
+        </div>
         
         <button onclick="calculateResponse()">Calculate</button>
         <div class="result" id="result"></div>
@@ -83,6 +84,16 @@
     <script>
         function updateRate() {
             document.getElementById("responseRateValue").innerText = document.getElementById("responseRate").value + "%";
+        }
+
+        function showResponseRate() {
+            document.getElementById("responseRateSection").style.display = "block";
+            document.getElementById("responseInputSection").style.display = "none";
+        }
+
+        function showTotalResponses() {
+            document.getElementById("responseRateSection").style.display = "none";
+            document.getElementById("responseInputSection").style.display = "block";
         }
 
         function calculateResponse() {
@@ -97,12 +108,14 @@
             
             let outputText = "";
             
-            if (responses !== "" && responses >= 0) {
+            if (document.getElementById("responseInputSection").style.display === "block" && responses !== "" && responses >= 0) {
                 const calculatedRate = ((responses / sampleSize) * 100).toFixed(2);
                 outputText = `Calculated Response Rate: ${calculatedRate}%`;
-            } else {
+            } else if (document.getElementById("responseRateSection").style.display === "block") {
                 const estimatedResponses = Math.round((sampleSize * responseRate) / 100);
                 outputText = `Estimated Responses: ${estimatedResponses}`;
+            } else {
+                outputText = "Please select an input method (Expected Response Rate or Total Responses).";
             }
             
             document.getElementById("result").innerText = outputText;
