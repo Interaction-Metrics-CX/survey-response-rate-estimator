@@ -29,7 +29,7 @@
             font-weight: bold;
         }
         input, button {
-            width: 100%;
+            width: calc(100% - 20px);
             margin: 10px 0;
             padding: 10px;
             border-radius: 5px;
@@ -73,6 +73,9 @@
             <input type="range" id="responseRate" class="slider" min="1" max="100" value="50" oninput="updateRate()">
         </div>
         
+        <label for="responses">Enter Number of Responses (Optional):</label>
+        <input type="number" id="responses" placeholder="Enter number of responses" min="0">
+        
         <button onclick="calculateResponse()">Calculate</button>
         <div class="result" id="result"></div>
     </div>
@@ -85,14 +88,24 @@
         function calculateResponse() {
             const sampleSize = document.getElementById("sampleSize").value;
             const responseRate = document.getElementById("responseRate").value;
+            const responses = document.getElementById("responses").value;
             
             if (sampleSize === "" || sampleSize <= 0) {
                 document.getElementById("result").innerText = "Please enter a valid sample size.";
                 return;
             }
             
-            const estimatedResponses = Math.round((sampleSize * responseRate) / 100);
-            document.getElementById("result").innerText = `Estimated Responses: ${estimatedResponses}`;
+            let outputText = "";
+            
+            if (responses !== "" && responses >= 0) {
+                const calculatedRate = ((responses / sampleSize) * 100).toFixed(2);
+                outputText = `Calculated Response Rate: ${calculatedRate}%`;
+            } else {
+                const estimatedResponses = Math.round((sampleSize * responseRate) / 100);
+                outputText = `Estimated Responses: ${estimatedResponses}`;
+            }
+            
+            document.getElementById("result").innerText = outputText;
         }
     </script>
 </body>
